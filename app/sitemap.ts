@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://tasneem.vercel.app";
+  const baseUrl = "https://tasneem.mattrizz.web.id";
 
   // Static routes
   const routes = [

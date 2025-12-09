@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/private/", "/api/"],
     },
-    sitemap: "https://tasneem.vercel.app/sitemap.xml",
+    sitemap: "https://tasneem.mattrizz.web.id/sitemap.xml",
   };
 }

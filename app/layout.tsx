@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://tasneem.vercel.app"),
+  metadataBase: new URL("https://tasneem.mattrizz.web.id"),
   alternates: {
     canonical: "/",
   },
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     title: "Tasneem - Al-Quran Digital Indonesia",
     description:
       "Aplikasi Al-Quran Digital dengan terjemahan Bahasa Indonesia, audio murottal, doa harian, asmaul husna, dan tahlil.",
-    url: "https://tasneem.vercel.app",
+    url: "https://tasneem.mattrizz.web.id",
     siteName: "Tasneem",
     images: [
       {
