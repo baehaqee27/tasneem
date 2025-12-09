@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tasneem - Aplikasi Al-Quran Digital 📖
 
-## Getting Started
+![Tasneem Preview](/public/og-image.png)
 
-First, run the development server:
+**Tasneem** adalah aplikasi Al-Quran digital modern yang dikembangkan dengan teknologi web terbaru untuk memberikan pengalaman membaca, mendengarkan, dan mempelajari Al-Quran yang nyaman, cepat, dan estetis.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Aplikasi ini dirancang dengan antarmuka yang bersih (clean UI), responsif untuk mobile, dan dilengkapi dengan fitur-fitur pendukung ibadah harian.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Fitur Utama
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **📖 Al-Quran Digital 30 Juz**: Baca Al-Quran lengkap dengan terjemahan Bahasa Indonesia (Kemenag).
+- **🎧 Audio Murottal**: Dengarkan lantunan ayat suci dari berbagai Qari ternama (Mishary Rashid Al-Afasy, dll).
+- **🤲 Doa Harian**: Kumpulan doa-doa harian lengkap dengan Arab, Latin, dan Artinya.
+- **📿 Asmaul Husna**: 99 Nama Allah yang indah beserta maknanya.
+- **💀 Tahlil**: Bacaan Tahlil lengkap untuk keperluan ibadah.
+- **📑 Penanda (Bookmarks)**: Simpan ayat-ayat favorit atau terakhir dibaca.
+- **📂 Koleksi Ayat**: Buat playlist atau koleksi ayat pribadi untuk hafalan atau tema tertentu.
+- **🖼️ Berbagi Ayat & Doa**: Bagikan ayat atau doa dalam bentuk gambar yang indah (Image Generator) dengan kustomisasi font dan tampilan.
+- **🔍 Pencarian Cepat**: Cari surat atau ayat dengan mudah.
+- **🌙 Dark Mode**: Dukungan tema gelap untuk kenyamanan membaca di malam hari.
+- **📱 PWA Ready**: Dapat diinstal sebagai aplikasi di HP (Progressive Web App).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Teknologi
 
-## Learn More
+Dibangun dengan stack teknologi modern untuk performa dan developer experience terbaik:
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Shadcn UI](https://ui.shadcn.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **State Management**: React Hooks (Context API for Audio)
+- **Image Generation**: `html-to-image`
+- **Animations**: `framer-motion` (untuk beberapa interaksi halus)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Cara Menjalankan (Local Development)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Pastikan Anda sudah menginstal [Node.js](https://nodejs.org/) (versi 18+ direkomendasikan).
 
-## Deploy on Vercel
+1.  **Clone repository ini**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    ```bash
+    git clone https://github.com/username/mini-quran.git
+    cd mini-quran
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2.  **Install dependencies**
+
+    ```bash
+    npm install
+    # atau
+    yarn install
+    # atau
+    pnpm install
+    ```
+
+3.  **Jalankan server development**
+
+    ```bash
+    npm run dev
+    ```
+
+4.  **Buka di browser**
+    Buka [http://localhost:3000](http://localhost:3000) untuk melihat aplikasi.
+
+## 📡 Sumber Data (API)
+
+Terima kasih kepada penyedia API terbuka yang memungkinkan aplikasi ini berjalan:
+
+- **Al-Quran & Terjemahan**: [Santrikoding Quran API](https://quran-api.santrikoding.com/) & [EQuran.id](https://equran.id/)
+- **Audio Murottal**: [QuranicAudio.com](https://quranicaudio.com/)
+- **Tafsir**: [EQuran.id](https://equran.id/)
+
+## 📝 Lisensi
+
+Project ini bersifat **Open Source** di bawah lisensi [MIT](LICENSE). Bebas untuk dipelajari, dimodifikasi, dan dikembangkan ulang.
+
+---
+
+Dibuat dengan ❤️ oleh [Tim Tasneem](https://github.com/mattrizz)
