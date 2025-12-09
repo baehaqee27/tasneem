@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 import { BottomNav } from "@/components/bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PwaRegistrar } from "@/components/pwa-registrar";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -91,7 +92,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
@@ -118,7 +119,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${lora.variable} ${arabic.variable} min-h-screen bg-gray-100 text-foreground antialiased flex justify-center`}
+        className={`${outfit.variable} ${lora.variable} ${arabic.variable} min-h-screen bg-gray-100 text-foreground antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -126,7 +127,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="w-full max-w-md bg-background min-h-screen shadow-2xl relative">
+          <PwaRegistrar />
+          <div className="w-full min-h-screen bg-background relative md:max-w-md md:mx-auto md:shadow-2xl">
             <main className="container py-4 pb-24 px-4">{children}</main>
             <BottomNav />
           </div>

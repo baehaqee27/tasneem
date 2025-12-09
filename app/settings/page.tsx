@@ -11,12 +11,12 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 
 import { useSettings } from "@/hooks/use-settings";
-import { useInstallPrompt } from "@/hooks/use-install-prompt";
+import { usePwaInstall } from "@/hooks/use-pwa-install";
 import { QariSelector } from "@/components/qari-selector";
 
 export default function SettingsPage() {
   const { fontSize, setFontSize } = useSettings();
-  const { isInstallable, promptToInstall } = useInstallPrompt();
+  const { isInstallable, installApp } = usePwaInstall();
   const { theme, setTheme } = useTheme();
   const [showTranslation, setShowTranslation] = useState(true);
   const [mounted, setMounted] = useState(false);
@@ -55,6 +55,23 @@ export default function SettingsPage() {
       </div>
 
       <div className="space-y-4">
+        {isInstallable && (
+          <Card className="bg-primary/5 border-primary/20">
+            <CardContent className="p-4 flex items-center justify-between">
+              <div className="space-y-1">
+                <h3 className="font-semibold text-primary">Install Aplikasi</h3>
+                <p className="text-xs text-muted-foreground">
+                  Pasang aplikasi di perangkat anda untuk akses lebih cepat
+                </p>
+              </div>
+              <Button size="sm" onClick={installApp}>
+                <Download className="h-4 w-4 mr-2" />
+                Install
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Tampilan</CardTitle>
@@ -127,23 +144,6 @@ export default function SettingsPage() {
             </div>
           </CardContent>
         </Card>
-
-        {isInstallable && (
-          <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="space-y-1">
-                <h3 className="font-semibold text-primary">Install Aplikasi</h3>
-                <p className="text-xs text-muted-foreground">
-                  Pasang aplikasi di perangkat anda untuk akses lebih cepat
-                </p>
-              </div>
-              <Button size="sm" onClick={promptToInstall}>
-                <Download className="h-4 w-4 mr-2" />
-                Install
-              </Button>
-            </CardContent>
-          </Card>
-        )}
 
         <div className="space-y-2">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
