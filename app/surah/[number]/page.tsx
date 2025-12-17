@@ -14,7 +14,11 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getSurahDetail, getTafsir } from "@/lib/api";
-import { SurahDetail, Tafsir, Ayat } from "@/types/quran";
+import type {
+  SurahDetail as SurahDetailType,
+  Tafsir,
+  Ayat,
+} from "@/types/quran";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AyatCard } from "@/components/ayat-card";
 import { AudioPlayer } from "@/components/audio-player";
@@ -51,7 +55,7 @@ export default function SurahDetail({
   const router = useRouter();
   const nomor = parseInt(number);
 
-  const [surah, setSurah] = useState<SurahDetail | null>(null);
+  const [surah, setSurah] = useState<SurahDetailType | null>(null);
   const [tafsirData, setTafsirData] = useState<Tafsir[]>([]);
   const [loading, setLoading] = useState(true);
   const { isBookmarked, toggleBookmark } = useBookmarks();
