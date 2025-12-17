@@ -1,57 +1,74 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export interface Qari {
   id: string;
   name: string;
-  urlPattern: string; // e.g., "https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/"
 }
 
 export const QARIS: Qari[] = [
   {
-    id: "mishary",
+    id: "01",
+    name: "Abdullah Al-Juhany",
+  },
+  {
+    id: "02",
+    name: "Abdul Muhsin Al-Qasim",
+  },
+  {
+    id: "03",
+    name: "Abdurrahman As-Sudais",
+  },
+  {
+    id: "04",
+    name: "Ibrahim Al-Dossari",
+  },
+  {
+    id: "05",
     name: "Mishary Rashid Al-Afasy",
-    urlPattern:
-      "https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/",
   },
   {
-    id: "abdulbasit",
-    name: "Abdul Basit (Murattal)",
-    urlPattern: "https://download.quranicaudio.com/quran/abdul_basit_murattal/",
-  },
-  {
-    id: "sudais",
-    name: "Abdurrahmaan As-Sudais",
-    urlPattern:
-      "https://download.quranicaudio.com/quran/abdurrahmaan_as-sudays/",
-  },
-  {
-    id: "husary",
-    name: "Mahmoud Khalil Al-Husary",
-    urlPattern:
-      "https://download.quranicaudio.com/quran/mahmoud_khalil_al-hussary/",
+    id: "06",
+    name: "Yasser Al-Dosari",
   },
 ];
 
 export function useQari() {
-  const [selectedQari, setSelectedQari] = useState<Qari>(QARIS[0]);
+  const [selectedQari, setSelectedQari] = useState<Qari>(QARIS[4]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem("selectedQariId");
+    const saved = localStorage.getItem("tasneem-selected-qari");
     if (saved) {
-      const qari = QARIS.find((q) => q.id === saved);
-      if (qari) setSelectedQari(qari);
+      try {
+        const parsed = JSON.parse(saved);
+        // Find if the saved qari still exists in our updated list
+        // Since we changed IDs from 'mishary' to '05', old saved data might be invalid
+        // We should migrate or reset if invalid.
+        // Simple check: if ID length is 2 (new format) or name matches?
+        // Let's just check if ID exists in current QARIS
+        const exists = QARIS.find((q) => q.id === parsed.id);
+        if (exists) {
+          setSelectedQari(exists);
+        } else {
+          // Fallback to default if saved one is invalid (e.g. old ID)
+          setSelectedQari(QARIS[4]);
+        }
+      } catch (e) {
+        console.error("Failed to parse selected qari", e);
+      }
     }
+    setMounted(true);
   }, []);
 
   const changeQari = (qariId: string) => {
     const qari = QARIS.find((q) => q.id === qariId);
     if (qari) {
       setSelectedQari(qari);
-      localStorage.setItem("selectedQariId", qariId);
+      localStorage.setItem("tasneem-selected-qari", JSON.stringify(qari));
+      toast.success(`Qari diubah ke ${qari.name}`);
     }
   };
 

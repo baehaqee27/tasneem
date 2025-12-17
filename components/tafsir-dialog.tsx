@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, ImageDown } from "lucide-react";
 import { Ayat } from "@/types/quran";
 
 interface TafsirDialogProps {
@@ -18,6 +18,7 @@ interface TafsirDialogProps {
   ayat: Ayat | null;
   tafsir: string | null;
   surahName: string;
+  onShare?: () => void;
 }
 
 export function TafsirDialog({
@@ -26,6 +27,7 @@ export function TafsirDialog({
   ayat,
   tafsir,
   surahName,
+  onShare,
 }: TafsirDialogProps) {
   if (!ayat) return null;
 
@@ -41,15 +43,29 @@ export function TafsirDialog({
               {surahName} : {ayat.nomor}
             </span>
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-full"
-            onClick={() => onOpenChange(false)}
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Tutup</span>
-          </Button>
+          <div className="flex items-center gap-1">
+            {onShare && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full"
+                onClick={onShare}
+                title="Bagikan Tafsir"
+              >
+                <ImageDown className="h-4 w-4" />
+                <span className="sr-only">Bagikan Tafsir</span>
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={() => onOpenChange(false)}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Tutup</span>
+            </Button>
+          </div>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto">
           <div className="p-5 space-y-6">

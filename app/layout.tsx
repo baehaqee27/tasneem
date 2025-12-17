@@ -120,6 +120,7 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning>
       <body
         className={`${outfit.variable} ${lora.variable} ${arabic.variable} min-h-screen bg-gray-100 text-foreground antialiased`}
+        suppressHydrationWarning
       >
         <ThemeProvider
           attribute="class"

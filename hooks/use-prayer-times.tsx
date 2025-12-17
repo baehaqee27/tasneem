@@ -84,7 +84,12 @@ export function usePrayerTimes() {
             );
           },
           (error) => {
-            console.error("Geolocation error:", error);
+            // Log warning instead of error for permission denied to avoid alarming users
+            if (error.code === 1) {
+              console.warn("Location access denied. Defaulting to Jakarta.");
+            } else {
+              console.warn("Geolocation unavailable:", error.message);
+            }
             // Default to Jakarta if location access denied or error
             fetchPrayerTimes(-6.2088, 106.8456);
             setLocationName("Jakarta");

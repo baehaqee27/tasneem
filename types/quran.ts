@@ -7,6 +7,12 @@ export interface Surah {
   arti: string;
   deskripsi: string;
   audio: string;
+  audioFull: Record<string, string>;
+}
+
+export interface Tafsir {
+  ayat: number;
+  teks: string;
 }
 
 export interface Ayat {

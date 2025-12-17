@@ -10,6 +10,7 @@ import {
   Sparkles,
   Search,
   Folder,
+  Music,
 } from "lucide-react";
 import { useLastRead } from "@/hooks/use-last-read";
 import { BackgroundPattern } from "@/components/background-pattern";
@@ -138,6 +139,22 @@ export default function HomePage() {
               </div>
               <h3 className="font-semibold text-foreground mb-1">Doa</h3>
               <p className="text-xs text-muted-foreground">Doa Harian</p>
+            </div>
+          </Link>
+
+          <Link href="/playlists" className="col-span-2">
+            <div className="group relative overflow-hidden rounded-2xl bg-muted/30 hover:bg-muted/50 border border-border/50 hover:border-primary/20 transition-all duration-300 p-6 text-center cursor-pointer flex items-center justify-between px-8">
+              <div className="text-left">
+                <h3 className="font-semibold text-foreground mb-1">
+                  Daftar Putar
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Rekomendasi & Custom
+                </p>
+              </div>
+              <div className="inline-flex p-3 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
+                <Music className="w-6 h-6" />
+              </div>
             </div>
           </Link>
 

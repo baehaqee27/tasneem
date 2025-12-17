@@ -15,7 +15,7 @@ import { usePwaInstall } from "@/hooks/use-pwa-install";
 import { QariSelector } from "@/components/qari-selector";
 
 export default function SettingsPage() {
-  const { fontSize, setFontSize } = useSettings();
+  const { fontSize, setFontSize, autoplay, setAutoplay } = useSettings();
   const { isInstallable, installApp } = usePwaInstall();
   const { theme, setTheme } = useTheme();
   const [showTranslation, setShowTranslation] = useState(true);
@@ -141,6 +141,16 @@ export default function SettingsPage() {
                 checked={showTranslation}
                 onCheckedChange={handleTranslationToggle}
               />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Putar Otomatis</Label>
+                <p className="text-xs text-muted-foreground">
+                  Audio langsung berputar saat dibuka
+                </p>
+              </div>
+              <Switch checked={autoplay} onCheckedChange={setAutoplay} />
             </div>
           </CardContent>
         </Card>

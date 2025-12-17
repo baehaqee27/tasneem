@@ -1,17 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import {
+  ArrowLeft,
+  MoreVertical,
+  Play,
+  Info,
+  Settings,
+  Share2,
+  Music,
+} from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { getSurahDetail, getTafsir } from "@/lib/api";
-import { SurahDetail, Ayat } from "@/types/quran";
+import { SurahDetail, Tafsir, Ayat } from "@/types/quran";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AyatCard } from "@/components/ayat-card";
 import { AudioPlayer } from "@/components/audio-player";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
-import { ArrowLeft, MoreVertical, Info, Settings } from "lucide-react";
 import { useBookmarks } from "@/hooks/use-bookmarks";
-import { useLastRead } from "@/hooks/use-last-read";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,105 +28,74 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useQari } from "@/hooks/use-qari";
+import { usePlaylists } from "@/hooks/use-playlists";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { TafsirShareDialog } from "@/components/tafsir-share-dialog";
+import { ImageDown } from "lucide-react";
 import { TafsirDialog } from "@/components/tafsir-dialog";
 
-export default function SurahPage() {
-  const params = useParams();
+export default function SurahDetail({
+  params,
+}: {
+  params: Promise<{ number: string }>;
+}) {
+  const { number } = React.use(params);
   const router = useRouter();
-  const nomor = Number(params.number);
-  const [surah, setSurah] = useState<SurahDetail | null>(null);
-  const [tafsirData, setTafsirData] = useState<
-    { ayat: number; teks: string }[]
-  >([]);
-  const [loading, setLoading] = useState(true);
-  const [showStickyTitle, setShowStickyTitle] = useState(false);
-  const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const nomor = parseInt(number);
 
-  // Tafsir State
+  const [surah, setSurah] = useState<SurahDetail | null>(null);
+  const [tafsirData, setTafsirData] = useState<Tafsir[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const { selectedQari } = useQari();
+  const { playlists, addToPlaylist, createPlaylist } = usePlaylists();
+
   const [showTafsirDialog, setShowTafsirDialog] = useState(false);
+  const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const [showPlaylistDialog, setShowPlaylistDialog] = useState(false);
   const [selectedTafsirAyat, setSelectedTafsirAyat] = useState<Ayat | null>(
     null
   );
-
-  const { isBookmarked, toggleBookmark } = useBookmarks();
-  const { saveLastRead } = useLastRead();
-  const { selectedQari } = useQari();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setShowStickyTitle(true);
-      } else {
-        setShowStickyTitle(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const [showStickyTitle, setShowStickyTitle] = useState(false);
+  const [newPlaylistName, setNewPlaylistName] = useState("");
+  const [showTafsirShareDialog, setShowTafsirShareDialog] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!nomor || isNaN(nomor)) {
-        setLoading(false);
-        return;
-      }
-
+    const loadSurah = async () => {
       try {
-        // Fetch in parallel for better performance
-        const [surahData, tafsirRes] = await Promise.all([
-          getSurahDetail(nomor),
-          getTafsir(nomor),
-        ]);
-
-        setSurah(surahData);
-        setTafsirData(tafsirRes);
-
-        // Save last read when opening surah (default to ayat 1)
-        saveLastRead(surahData.nomor, surahData.nama_latin, 1);
+        const detail = await getSurahDetail(nomor);
+        setSurah(detail);
+        const tafsir = await getTafsir(nomor);
+        setTafsirData(tafsir);
       } catch (error) {
-        console.error("Failed to fetch surah data:", error);
+        console.error("Failed to fetch surah data", error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchData();
+    loadSurah();
   }, [nomor]);
 
-  // Handle Hash Scrolling
   useEffect(() => {
-    if (!loading && surah) {
-      const hash = window.location.hash;
-      if (hash) {
-        const id = hash.replace("#", "");
-        // Use a slight delay to allow layout to settle
-        setTimeout(() => {
-          const element = document.getElementById(id);
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "center" });
-            element.classList.add("bg-primary/10");
-            setTimeout(() => {
-              element.classList.remove("bg-primary/10");
-            }, 2000);
-          }
-        }, 500);
-      }
-    }
-  }, [loading, surah]);
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setShowStickyTitle(scrollY > 100);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  // Helper to get audio URL
   const getAudioUrl = () => {
     if (!surah) return "";
-    // Format surah number to 3 digits (e.g. 001, 012, 114)
-    const surahNum = surah.nomor.toString().padStart(3, "0");
-    return `${selectedQari.urlPattern}${surahNum}.mp3`;
+    return surah.audioFull[selectedQari.id] || surah.audio || "";
   };
 
   const handleTafsirClick = (ayat: Ayat) => {
@@ -129,6 +105,20 @@ export default function SurahPage() {
 
   const getTafsirText = (ayatNomor: number) => {
     return tafsirData.find((t) => t.ayat === ayatNomor)?.teks || null;
+  };
+
+  const handleAddToPlaylist = (playlistId: string) => {
+    if (!surah) return;
+    addToPlaylist(playlistId, surah.nomor);
+    setShowPlaylistDialog(false);
+  };
+
+  const handleCreatePlaylist = () => {
+    if (!newPlaylistName.trim()) return;
+    const newPl = createPlaylist(newPlaylistName);
+    if (surah) addToPlaylist(newPl.id, surah.nomor);
+    setNewPlaylistName("");
+    setShowPlaylistDialog(false);
   };
 
   if (loading) {
@@ -175,7 +165,7 @@ export default function SurahPage() {
               : "bg-transparent"
           }`}
         >
-          <Link href="/">
+          <Link href="/quran">
             <Button
               variant="ghost"
               size="icon"
@@ -198,6 +188,16 @@ export default function SurahPage() {
           </div>
 
           <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={showStickyTitle ? "h-8 w-8" : ""}
+              onClick={() => setShowPlaylistDialog(true)}
+              title="Simpan ke Playlist"
+            >
+              <Music className="h-5 w-5 text-foreground" />
+              <span className="sr-only">Simpan ke Playlist</span>
+            </Button>
             <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -210,6 +210,10 @@ export default function SurahPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setShowPlaylistDialog(true)}>
+                  <Music className="mr-2 h-4 w-4" />
+                  Simpan ke Playlist
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setShowInfoDialog(true)}>
                   <Info className="mr-2 h-4 w-4" />
                   Info Surah
@@ -243,6 +247,51 @@ export default function SurahPage() {
             </ScrollArea>
           </DialogContent>
         </Dialog>
+
+        <Dialog open={showPlaylistDialog} onOpenChange={setShowPlaylistDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Simpan ke Playlist</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Playlist Saya</Label>
+                <div className="grid gap-2 max-h-[200px] overflow-y-auto">
+                  {playlists.filter((p) => p.type === "custom").length ===
+                    0 && (
+                    <p className="text-sm text-muted-foreground">
+                      Belum ada playlist custom.
+                    </p>
+                  )}
+                  {playlists
+                    .filter((p) => p.type === "custom")
+                    .map((p) => (
+                      <Button
+                        key={p.id}
+                        variant="outline"
+                        className="justify-start"
+                        onClick={() => handleAddToPlaylist(p.id)}
+                      >
+                        <Music className="mr-2 h-4 w-4" />
+                        {p.name}
+                      </Button>
+                    ))}
+                </div>
+              </div>
+              <div className="space-y-2 pt-4 border-t">
+                <Label>Buat Playlist Baru</Label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Nama playlist..."
+                    value={newPlaylistName}
+                    onChange={(e) => setNewPlaylistName(e.target.value)}
+                  />
+                  <Button onClick={handleCreatePlaylist}>Buat</Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Surah Info */}
@@ -251,7 +300,8 @@ export default function SurahPage() {
           {surah.nama}
         </h2>
         <p className="text-foreground font-medium">
-          {surah.nama_latin} • {surah.jumlah_ayat} Ayat
+          {surah.nama_latin} • {surah.arti} • {surah.jumlah_ayat} Ayat •{" "}
+          {surah.tempat_turun}
         </p>
       </div>
 
@@ -278,6 +328,7 @@ export default function SurahPage() {
         <AudioPlayer
           src={getAudioUrl()}
           title={`Surah ${surah.nama_latin}`}
+          subtitle={`Sedang Memutar Surah ${surah.nama_latin}`}
           onNext={
             nomor < 114 ? () => router.push(`/surah/${nomor + 1}`) : undefined
           }
@@ -287,7 +338,6 @@ export default function SurahPage() {
         />
       )}
 
-      {/* Tafsir Dialog */}
       <TafsirDialog
         open={showTafsirDialog}
         onOpenChange={setShowTafsirDialog}
@@ -296,7 +346,20 @@ export default function SurahPage() {
           selectedTafsirAyat ? getTafsirText(selectedTafsirAyat.nomor) : null
         }
         surahName={surah.nama_latin}
+        onShare={() => setShowTafsirShareDialog(true)}
       />
+
+      {selectedTafsirAyat && (
+        <TafsirShareDialog
+          open={showTafsirShareDialog}
+          onOpenChange={setShowTafsirShareDialog}
+          surahName={surah.nama_latin}
+          ayatNumber={selectedTafsirAyat.nomor}
+          tafsirText={getTafsirText(selectedTafsirAyat.nomor) || ""}
+          surahMean={surah.arti}
+          surahType={surah.tempat_turun}
+        />
+      )}
     </div>
   );
 }

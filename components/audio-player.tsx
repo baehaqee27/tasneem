@@ -15,15 +15,25 @@ import {
 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/hooks/use-settings";
 
 interface AudioPlayerProps {
   src: string;
   title: string;
+  subtitle?: string;
+  autoPlayOnMount?: boolean;
   onNext?: () => void;
   onPrev?: () => void;
 }
 
-export function AudioPlayer({ src, title, onNext, onPrev }: AudioPlayerProps) {
+export function AudioPlayer({
+  src,
+  title,
+  subtitle,
+  autoPlayOnMount,
+  onNext,
+  onPrev,
+}: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -31,6 +41,7 @@ export function AudioPlayer({ src, title, onNext, onPrev }: AudioPlayerProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const { autoplay } = useSettings();
 
   useEffect(() => {
     let active = true;
@@ -39,23 +50,30 @@ export function AudioPlayer({ src, title, onNext, onPrev }: AudioPlayerProps) {
       if (audioRef.current && src) {
         audioRef.current.src = src;
         setProgress(0);
-        setIsPlaying(true);
-        setIsVisible(true);
-        setIsMinimized(false); // Auto-expand when new track starts
-        try {
-          await audioRef.current.play();
-        } catch (error: any) {
-          if (!active) return; // Ignore errors from stale effects
 
-          // Ignore AbortError (user navigated away) and NotAllowedError (autoplay blocked)
-          if (error.name !== "AbortError" && error.name !== "NotAllowedError") {
-            console.error("Playback failed:", error);
+        // Only autoplay if setting is enabled OR forced by prop
+        if (autoplay || autoPlayOnMount) {
+          setIsPlaying(true);
+          try {
+            await audioRef.current.play();
+          } catch (error: any) {
+            if (!active) return;
+            if (
+              error.name !== "AbortError" &&
+              error.name !== "NotAllowedError"
+            ) {
+              console.error("Playback failed:", error);
+            }
+            if (error.name === "NotAllowedError") {
+              setIsPlaying(false);
+            }
           }
-          // Always ensure state is synced
-          if (error.name === "NotAllowedError") {
-            setIsPlaying(false);
-          }
+        } else {
+          setIsPlaying(false);
         }
+
+        setIsVisible(true);
+        setIsMinimized(false);
       }
     };
 
@@ -64,7 +82,7 @@ export function AudioPlayer({ src, title, onNext, onPrev }: AudioPlayerProps) {
     return () => {
       active = false;
     };
-  }, [src]);
+  }, [src, autoplay, autoPlayOnMount]);
 
   const togglePlay = async (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -196,7 +214,7 @@ export function AudioPlayer({ src, title, onNext, onPrev }: AudioPlayerProps) {
                   {title}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  Sedang Memutar
+                  {subtitle || "Sedang Memutar"}
                 </span>
               </div>
 
